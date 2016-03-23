@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Андрей Кованов](https://up.htmlacademy.ru/javascript/4/user/63294).
-* Наставник: `Неизвестно`.
+* Наставник: [Виталий Ртищев](https://htmlacademy.ru/profile/id87261).
 
 ---
 
