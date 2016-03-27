@@ -2,38 +2,26 @@
 
 var getMessage = function(a, b) {
   var sum = function(arr) {
-    var sumArr = 0;
-    for (var i=0; i<arr.length; i++) {
-      sumArr += arr[i];
-    };
-    return sumArr;
+    return arr.reduce(function(sum, item) {
+      return sum + item;
+    });
   };
 
   var square = function(arr1, arr2) {
-    var squareArr = 0;
-    for (var i=0; i<arr1.length; i++) {
-      squareArr += arr1[i] * arr2[i];
-    };
-    return squareArr;
+    return arr1.reduce(function(sum, item, index) {
+      return sum + item * arr2[index];
+    }, 0);
   };
 
   if (typeof a === 'boolean') {
-    if (a) {
-      return 'Переданное GIF-изображение анимировано и содержит ' + b + ' кадров';
-    } else {
-      return 'Переданное GIF-изображение не анимировано';
-    };
-  };
+    return a ? 'Переданное GIF-изображение анимировано и содержит ' + b + ' кадров' : 'Переданное GIF-изображение не анимировано';
+  }
 
   if (typeof a === 'number') {
     return 'Переданное SVG-изображение содержит ' + a + ' объектов и ' + (b * 4) + ' атрибутов';
-  };
+  }
 
   if (Array.isArray(a)) {
-    if (Array.isArray(b)) {
-      return 'Общая площадь артефактов сжатия: ' + square(a, b) + ' пикселей';
-    } else {
-      return 'Количество красных точек во всех строчках изображения: ' + sum(a);
-    };
-  };
+    return Array.isArray(b) ? 'Общая площадь артефактов сжатия: ' + square(a, b) + ' пикселей' : 'Количество красных точек во всех строчках изображения: ' + sum(a);
+  }
 };
