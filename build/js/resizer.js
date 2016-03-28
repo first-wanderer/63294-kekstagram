@@ -114,11 +114,46 @@
 
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
+      // this._ctx.strokeRect(
+      //     (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+      //     (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+      //     this._resizeConstraint.side - this._ctx.lineWidth / 2,
+      //     this._resizeConstraint.side - this._ctx.lineWidth / 2);
+
+      //Точечная рамка области кадрирования
+      this._ctx.fillStyle = '#ffe753';
+
+      var drawCircle = function(ctx, x, y, size) {
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2, true);
+        ctx.fill();
+      };
+
+      var circleX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      var circleY = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+
+      while (circleX < this._resizeConstraint.side / 2) {
+        drawCircle(this._ctx, circleX, circleY, 3);
+        circleX += 12;
+      }
+
+      circleX = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      while (circleY < this._resizeConstraint.side / 2) {
+        drawCircle(this._ctx, circleX, circleY, 3);
+        circleY += 12;
+      }
+
+      circleY = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      while (circleX > -this._resizeConstraint.side / 2) {
+        drawCircle(this._ctx, circleX, circleY, 3);
+        circleX -= 12;
+      }
+
+      circleX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      while (circleY > -this._resizeConstraint.side / 2) {
+        drawCircle(this._ctx, circleX, circleY, 3);
+        circleY -= 12;
+      }
 
       //Цвет заливки полупрозрачного оверлея
       this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
