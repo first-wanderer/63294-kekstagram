@@ -120,6 +120,41 @@
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2);
 
+      //Цвет заливки полупрозрачного оверлея
+      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+
+      //Отрисовка 4-х прямоугольников, создающих оверлей за линией кадрирования
+      this._ctx.fillRect(
+          -this._container.width / 2,
+          -this._container.height / 2,
+          this._container.width,
+          this._container.height / 2 - this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+
+      this._ctx.fillRect(
+          -this._container.width / 2,
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+          this._container.width,
+          this._container.height / 2 - this._resizeConstraint.side / 2 + this._ctx.lineWidth / 2);
+
+      this._ctx.fillRect(
+          -this._container.width / 2,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          this._container.width / 2 - this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          this._resizeConstraint.side + this._ctx.lineWidth / 2);
+
+      this._ctx.fillRect(
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+          -this._resizeConstraint.side / 2 - this._ctx.lineWidth,
+          this._container.width / 2 - this._resizeConstraint.side / 2 + this._ctx.lineWidth / 2,
+          this._resizeConstraint.side + this._ctx.lineWidth / 2);
+
+      //Вывод размеров кадрируемого изображения
+      this._ctx.fillStyle = '#fff';
+      this._ctx.font = '30px Tahoma';
+      this._ctx.textBaseline = 'bottom';
+      this._ctx.textAlign = 'center';
+      this._ctx.fillText(this._image.naturalWidth + ' x ' + this._image.naturalHeight, 0, -this._resizeConstraint.side / 2 - 10);
+
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
       // следующий кадр рисовался с привычной системой координат, где точка
