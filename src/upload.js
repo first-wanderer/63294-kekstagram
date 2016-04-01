@@ -72,7 +72,15 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    if ((resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth) &&
+      (resizeY.value + resizeSize.value <= currentResizer._image.naturalHeight)) {
+      resizeFwd.disabled = false;
+      resizeMessage.classList.add('invisible');
+      return true;
+    }
+    resizeFwd.disabled = true;
+    resizeMessage.classList.remove('invisible');
+    return false;
   }
 
   /**
@@ -86,6 +94,19 @@
    * @type {HTMLFormElement}
    */
   var resizeForm = document.forms['upload-resize'];
+
+  var resizeX = resizeForm.querySelector('#resize-x');
+  resizeX.min = 0;
+
+  var resizeY = resizeForm.querySelector('#resize-y');
+  resizeY.min = 0;
+
+  var resizeSize = resizeForm.querySelector('#resize-size');
+  resizeSize.min = 1;
+
+  var resizeFwd = resizeForm.querySelector('#resize-fwd');
+
+  var resizeMessage = resizeForm.querySelector('.upload-resize-message');
 
   /**
    * Форма добавления фильтра.
@@ -159,6 +180,12 @@
           uploadForm.classList.add('invisible');
           resizeForm.classList.remove('invisible');
 
+          resizeX.max = currentResizer._image.naturalWidth;
+          resizeY.max = currentResizer._image.naturalHeight;
+          resizeSize.max = Math.min(
+          currentResizer._image.naturalWidth,
+          currentResizer._image.naturalHeight);
+
           hideMessage();
         };
 
@@ -184,6 +211,13 @@
 
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
+  };
+
+  /**
+   * Валидация формы при изменении введенных значений.
+   */
+  resizeForm.onchange = function() {
+    resizeFormIsValid();
   };
 
   /**
