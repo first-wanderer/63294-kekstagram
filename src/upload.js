@@ -72,12 +72,18 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    if ((resizeX.value + resizeSize.value <= currentResizer._image.naturalWidth) &&
-      (resizeY.value + resizeSize.value <= currentResizer._image.naturalHeight)) {
+    var x = +resizeX.value;
+    var y = +resizeY.value;
+    var side = +resizeSize.value;
+    var imageWidth = currentResizer._image.naturalWidth;
+    var imageHeight = currentResizer._image.naturalHeight;
+
+    if (x + side <= imageWidth && y + side <= imageHeight) {
       resizeFwd.disabled = false;
       resizeMessage.classList.add('invisible');
       return true;
     }
+
     resizeFwd.disabled = true;
     resizeMessage.classList.remove('invisible');
     return false;
@@ -95,18 +101,22 @@
    */
   var resizeForm = document.forms['upload-resize'];
 
-  var resizeX = resizeForm.querySelector('#resize-x');
-  resizeX.min = 0;
-
-  var resizeY = resizeForm.querySelector('#resize-y');
-  resizeY.min = 0;
-
-  var resizeSize = resizeForm.querySelector('#resize-size');
-  resizeSize.min = 1;
-
-  var resizeFwd = resizeForm.querySelector('#resize-fwd');
-
+  /**
+   * Поля формы кадрирования изображения.
+   * @type {HTMLElement}
+   */
+  var resizeX = document.getElementById('resize-x');
+  var resizeY = document.getElementById('resize-y');
+  var resizeSize = document.getElementById('resize-size');
+  var resizeFwd = document.getElementById('resize-fwd');
   var resizeMessage = resizeForm.querySelector('.upload-resize-message');
+
+  /**
+   * Минимальные значения полей формы кадрирования изображения.
+   */
+  resizeX.min = 0;
+  resizeY.min = 0;
+  resizeSize.min = 1;
 
   /**
    * Форма добавления фильтра.
