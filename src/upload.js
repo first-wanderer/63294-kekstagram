@@ -72,7 +72,21 @@
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    var x = +resizeX.value;
+    var y = +resizeY.value;
+    var side = +resizeSize.value;
+    var imageWidth = currentResizer._image.naturalWidth;
+    var imageHeight = currentResizer._image.naturalHeight;
+
+    if (x + side <= imageWidth && y + side <= imageHeight) {
+      resizeFwd.disabled = false;
+      resizeMessage.classList.add('invisible');
+      return true;
+    }
+
+    resizeFwd.disabled = true;
+    resizeMessage.classList.remove('invisible');
+    return false;
   }
 
   /**
@@ -86,6 +100,23 @@
    * @type {HTMLFormElement}
    */
   var resizeForm = document.forms['upload-resize'];
+
+  /**
+   * Поля формы кадрирования изображения.
+   * @type {HTMLElement}
+   */
+  var resizeX = document.getElementById('resize-x');
+  var resizeY = document.getElementById('resize-y');
+  var resizeSize = document.getElementById('resize-size');
+  var resizeFwd = document.getElementById('resize-fwd');
+  var resizeMessage = resizeForm.querySelector('.upload-resize-message');
+
+  /**
+   * Минимальные значения полей формы кадрирования изображения.
+   */
+  resizeX.min = 0;
+  resizeY.min = 0;
+  resizeSize.min = 1;
 
   /**
    * Форма добавления фильтра.
@@ -159,6 +190,12 @@
           uploadForm.classList.add('invisible');
           resizeForm.classList.remove('invisible');
 
+          resizeX.max = currentResizer._image.naturalWidth;
+          resizeY.max = currentResizer._image.naturalHeight;
+          resizeSize.max = Math.min(
+          currentResizer._image.naturalWidth,
+          currentResizer._image.naturalHeight);
+
           hideMessage();
         };
 
@@ -184,6 +221,13 @@
 
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
+  };
+
+  /**
+   * Валидация формы при изменении введенных значений.
+   */
+  resizeForm.onchange = function() {
+    resizeFormIsValid();
   };
 
   /**
