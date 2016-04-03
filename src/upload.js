@@ -7,6 +7,8 @@
 
 'use strict';
 
+var browserCookies = require('browser-cookies');
+
 (function() {
   /** @enum {string} */
   var FileType = {
@@ -164,6 +166,31 @@
   }
 
   /**
+   * Вычисление количества дней прошедшего с последнего дня рождения.
+   * @param {number} day
+   * @param {number} month
+   * @return {number}
+   */
+  function daysFromBirth(day, month) {
+    var dateNow = Date.now();
+    var birthDay = (new Date()).setMonth(month - 1, day);
+    var amountDays = (dateNow - birthDay) / (24 * 60 * 60 * 1000);
+
+    return amountDays < 0 ? amountDays += 365 : amountDays;
+  }
+
+  /**
+   * Получение из класса изображения выбранного фильтра.
+   * @return {string}
+   */
+  function filterFromClass() {
+    var classFilter = filterImage.className;
+    var startFilter = classFilter.indexOf('filter', 1);
+
+    return startFilter === -1 ? 'none' : classFilter.slice(startFilter + 'filter'.length + 1);
+  }
+
+  /**
    * Обработчик изменения изображения в форме загрузки. Если загруженный
    * файл является изображением, считывается исходник картинки, создается
    * Resizer с загруженной картинкой, добавляется в форму кадрирования
@@ -233,6 +260,7 @@
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.
+   * Если в куки есть фильтр - показывает ранее использовавшийся фильтр.
    * @param {Event} evt
    */
   resizeForm.onsubmit = function(evt) {
@@ -240,6 +268,12 @@
 
     if (resizeFormIsValid()) {
       filterImage.src = currentResizer.exportImage().src;
+
+      if (browserCookies.get('filter')) {
+        [].filter.call(filterForm['upload-filter'], function(item) {
+          return item.value === browserCookies.get('filter');
+        })[0].checked = true;
+      }
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
@@ -264,6 +298,10 @@
    */
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
+
+    browserCookies.set('filter', filterFromClass(), {
+      expires: daysFromBirth(18, 2)
+    });
 
     cleanupResizer();
     updateBackground();
