@@ -44,6 +44,12 @@ var browserCookies = require('browser-cookies');
   var currentResizer;
 
   /**
+   * Выбранный фильтр.
+   * @type {string}
+   */
+  var selectedFilter = 'none';
+
+  /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
    * изображением.
    */
@@ -180,16 +186,6 @@ var browserCookies = require('browser-cookies');
   }
 
   /**
-   * Получение из полей формы выбранного фильтра.
-   * @return {string}
-   */
-  function selectedFilter() {
-    return [].filter.call(filterForm['upload-filter'], function(item) {
-      return item.checked;
-    })[0].value;
-  }
-
-  /**
    * Обработчик изменения изображения в форме загрузки. Если загруженный
    * файл является изображением, считывается исходник картинки, создается
    * Resizer с загруженной картинкой, добавляется в форму кадрирования
@@ -271,9 +267,7 @@ var browserCookies = require('browser-cookies');
       filterImage.src = currentResizer.exportImage().src;
 
       if (filterCookies) {
-        [].filter.call(filterForm['upload-filter'], function(item) {
-          return item.value === filterCookies;
-        })[0].checked = true;
+        document.getElementById('upload-filter-' + filterCookies).checked = true;
       }
 
       resizeForm.classList.add('invisible');
@@ -300,7 +294,7 @@ var browserCookies = require('browser-cookies');
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
 
-    browserCookies.set('filter', selectedFilter(), {
+    browserCookies.set('filter', selectedFilter, {
       expires: daysFromBirth(18, 2)
     });
 
@@ -327,10 +321,14 @@ var browserCookies = require('browser-cookies');
       };
     }
 
+    selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+      return item.checked;
+    })[0].value;
+
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
-    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter()];
+    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
   };
 
   cleanupResizer();
