@@ -180,14 +180,13 @@ var browserCookies = require('browser-cookies');
   }
 
   /**
-   * Получение из класса изображения выбранного фильтра.
+   * Получение из полей формы выбранного фильтра.
    * @return {string}
    */
-  function filterFromClass() {
-    var classFilter = filterImage.className;
-    var startFilter = classFilter.indexOf('filter', 1);
-
-    return startFilter === -1 ? 'none' : classFilter.slice(startFilter + 'filter'.length + 1);
+  function selectedFilter() {
+    return [].filter.call(filterForm['upload-filter'], function(item) {
+      return item.checked;
+    })[0].value;
   }
 
   /**
@@ -267,11 +266,13 @@ var browserCookies = require('browser-cookies');
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
+      var filterCookies = browserCookies.get('filter');
+
       filterImage.src = currentResizer.exportImage().src;
 
-      if (browserCookies.get('filter')) {
+      if (filterCookies) {
         [].filter.call(filterForm['upload-filter'], function(item) {
-          return item.value === browserCookies.get('filter');
+          return item.value === filterCookies;
         })[0].checked = true;
       }
 
@@ -299,7 +300,7 @@ var browserCookies = require('browser-cookies');
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
 
-    browserCookies.set('filter', filterFromClass(), {
+    browserCookies.set('filter', selectedFilter(), {
       expires: daysFromBirth(18, 2)
     });
 
@@ -326,14 +327,10 @@ var browserCookies = require('browser-cookies');
       };
     }
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
-      return item.checked;
-    })[0].value;
-
     // Класс перезаписывается, а не обновляется через classList потому что нужно
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
-    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter()];
   };
 
   cleanupResizer();
