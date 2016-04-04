@@ -7,6 +7,8 @@
 
 'use strict';
 
+var browserCookies = require('browser-cookies');
+
 (function() {
   /** @enum {string} */
   var FileType = {
@@ -40,6 +42,12 @@
    * @type {Resizer}
    */
   var currentResizer;
+
+  /**
+   * Выбранный фильтр.
+   * @type {string}
+   */
+  var selectedFilter = 'none';
 
   /**
    * Удаляет текущий объект {@link Resizer}, чтобы создать новый с другим
@@ -164,6 +172,20 @@
   }
 
   /**
+   * Вычисление количества дней прошедшего с последнего дня рождения.
+   * @param {number} day
+   * @param {number} month
+   * @return {number}
+   */
+  function daysFromBirth(day, month) {
+    var dateNow = Date.now();
+    var birthDay = (new Date()).setMonth(month - 1, day);
+    var amountDays = (dateNow - birthDay) / (24 * 60 * 60 * 1000);
+
+    return amountDays < 0 ? amountDays += 365 : amountDays;
+  }
+
+  /**
    * Обработчик изменения изображения в форме загрузки. Если загруженный
    * файл является изображением, считывается исходник картинки, создается
    * Resizer с загруженной картинкой, добавляется в форму кадрирования
@@ -233,13 +255,20 @@
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
    * кропнутое изображение в форму добавления фильтра и показывает ее.
+   * Если в куки есть фильтр - показывает ранее использовавшийся фильтр.
    * @param {Event} evt
    */
   resizeForm.onsubmit = function(evt) {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
+      var filterCookies = browserCookies.get('filter');
+
       filterImage.src = currentResizer.exportImage().src;
+
+      if (filterCookies) {
+        document.getElementById('upload-filter-' + filterCookies).checked = true;
+      }
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
@@ -265,6 +294,10 @@
   filterForm.onsubmit = function(evt) {
     evt.preventDefault();
 
+    browserCookies.set('filter', selectedFilter, {
+      expires: daysFromBirth(18, 2)
+    });
+
     cleanupResizer();
     updateBackground();
 
@@ -288,7 +321,7 @@
       };
     }
 
-    var selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
+    selectedFilter = [].filter.call(filterForm['upload-filter'], function(item) {
       return item.checked;
     })[0].value;
 
