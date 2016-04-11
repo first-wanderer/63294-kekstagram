@@ -95,13 +95,7 @@
 
       case 'filter-new':
         picturesToFiltration.sort(function(a, b) {
-          if (a.date < b.date) {
-            return 1;
-          }
-          if (a.date > b.date) {
-            return -1;
-          }
-          return 0;
+          return b.date.replace(/-/g, '') - a.date.replace(/-/g, '');
         });
 
         var periodTwoWeek = +new Date(picturesToFiltration[0]['date']) - 14 * 24 * 60 * 60 * 1000;
