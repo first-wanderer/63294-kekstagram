@@ -260,8 +260,9 @@ var browserCookies = require('browser-cookies');
    * Изменение resizer исходя из значений формы.
    */
   resizeForm.addEventListener('change', function() {
-    resizeFormIsValid();
-    currentResizer.setConstraint(resizeX.value, resizeY.value, resizeSize.value);
+    if (resizeFormIsValid()) {
+      currentResizer.setConstraint(+resizeX.value, +resizeY.value, +resizeSize.value);
+    }
   });
 
   /**
