@@ -4,6 +4,14 @@
   var blockFilters = document.querySelector('.filters');
   blockFilters.classList.add('hidden');
 
+  var PICTURE_LOAD_URL = '//o0.github.io/assets/json/pictures.json';
+  var pictures = [];
+  var filtrationPictures = [];
+  var PAGE_SIZE = 12;
+  var pageNumber = 0;
+  var DAP = 100;
+  var windowHeight = window.innerHeight;
+
   var picturesContainer = document.querySelector('.pictures');
   var templateElement = document.getElementById('picture-template');
   var elementToClone;
@@ -21,8 +29,6 @@
     element.querySelector('.picture-comments').textContent = data.comments;
     element.querySelector('.picture-likes').textContent = data.likes;
 
-    container.appendChild(element);
-
     var contentImage = new Image();
 
     contentImage.onload = function(evt) {
@@ -38,11 +44,10 @@
 
     contentImage.src = data.url;
 
+    container.appendChild(element);
+
     return element;
   };
-
-  var PICTURE_LOAD_URL = '//o0.github.io/assets/json/pictures.json';
-  var pictures = [];
 
   var getPicture = function(callback) {
     var xhr = new XMLHttpRequest();
@@ -75,16 +80,41 @@
     xhr.send();
   };
 
-  var renderPictures = function(getPictures) {
-    picturesContainer.innerHTML = '';
-
-    getPictures.forEach(function(picture) {
-      getPictureElement(picture, picturesContainer);
-    });
+  var isBottomReached = function() {
+    var picturesContainerPosition = picturesContainer.getBoundingClientRect();
+    return picturesContainerPosition.bottom - windowHeight <= DAP;
   };
 
-  var getFiltrationPictures = function(getPictures, filtration) {
-    var picturesToFiltration = getPictures.slice(0);
+  var isNextPageAvaible = function(picturesGeted, page, pageSize) {
+    return page < Math.floor(picturesGeted.length / pageSize);
+  };
+
+  var renderPictures = function(picturesGeted, page) {
+    var from = page * PAGE_SIZE;
+    var to = from + PAGE_SIZE;
+
+    var container = document.createDocumentFragment();
+
+    picturesGeted.slice(from, to).forEach(function(picture) {
+      getPictureElement(picture, container);
+    });
+
+    picturesContainer.appendChild(container);
+  };
+
+  var renderNextPages = function(picturesGeted, reset) {
+    if (reset) {
+      pageNumber = 0;
+      picturesContainer.innerHTML = '';
+    }
+
+    while (isBottomReached() && isNextPageAvaible(picturesGeted, pageNumber, PAGE_SIZE)) {
+      renderPictures(picturesGeted, pageNumber++);
+    }
+  };
+
+  var getFiltrationPictures = function(picturesGeted, filtration) {
+    var picturesToFiltration = picturesGeted.slice(0);
 
     switch (filtration) {
       case 'filter-discussed':
@@ -95,13 +125,7 @@
 
       case 'filter-new':
         picturesToFiltration.sort(function(a, b) {
-          if (a.date < b.date) {
-            return 1;
-          }
-          if (a.date > b.date) {
-            return -1;
-          }
-          return 0;
+          return b.date.replace(/-/g, '') - a.date.replace(/-/g, '');
         });
 
         var periodTwoWeek = +new Date(picturesToFiltration[0]['date']) - 14 * 24 * 60 * 60 * 1000;
@@ -116,21 +140,38 @@
   };
 
   var setFiltration = function(filtration) {
-    var filtrationPictures = getFiltrationPictures(pictures, filtration);
-    renderPictures(filtrationPictures);
+    filtrationPictures = getFiltrationPictures(pictures, filtration);
+    renderNextPages(filtrationPictures, true);
   };
 
-  getPicture(function(loadedPictures) {
-    pictures = loadedPictures;
-    renderPictures(pictures);
-
+  var setFiltrations = function() {
     blockFilters.onchange = function() {
       var selectedFiltration = [].filter.call(blockFilters['filter'], function(item) {
         return item.checked;
       })[0].id;
-
       setFiltration(selectedFiltration);
     };
+  };
+
+  var setScroll = function() {
+    var scrollTimeout;
+
+    window.addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+
+      scrollTimeout = setTimeout(function() {
+        renderNextPages(filtrationPictures);
+      }, 100);
+    });
+  };
+
+  getPicture(function(loadedPictures) {
+    pictures = loadedPictures;
+
+    setFiltrations();
+    setFiltration('filter-popular');
+
+    setScroll();
   });
 
   blockFilters.classList.remove('hidden');
