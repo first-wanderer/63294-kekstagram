@@ -186,13 +186,23 @@ var browserCookies = require('browser-cookies');
   }
 
   /**
+   * Устанавливает в форму значения из resizer.
+   */
+  function resizerToForm() {
+    var dimensions = currentResizer.getConstraint();
+    resizeX.value = dimensions.x;
+    resizeY.value = dimensions.y;
+    resizeSize.value = dimensions.side;
+  }
+
+  /**
    * Обработчик изменения изображения в форме загрузки. Если загруженный
    * файл является изображением, считывается исходник картинки, создается
    * Resizer с загруженной картинкой, добавляется в форму кадрирования
    * и показывается форма кадрирования.
    * @param {Event} evt
    */
-  uploadForm.onchange = function(evt) {
+  uploadForm.addEventListener('change', function(evt) {
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
@@ -202,7 +212,7 @@ var browserCookies = require('browser-cookies');
 
         showMessage(Action.UPLOADING);
 
-        fileReader.onload = function() {
+        fileReader.addEventListener('load', function() {
           cleanupResizer();
 
           currentResizer = new Resizer(fileReader.result);
@@ -219,7 +229,7 @@ var browserCookies = require('browser-cookies');
           currentResizer._image.naturalHeight);
 
           hideMessage();
-        };
+        });
 
         fileReader.readAsDataURL(element.files[0]);
       } else {
@@ -228,14 +238,14 @@ var browserCookies = require('browser-cookies');
         showMessage(Action.ERROR);
       }
     }
-  };
+  });
 
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
    * и обновляет фон.
    * @param {Event} evt
    */
-  resizeForm.onreset = function(evt) {
+  resizeForm.addEventListener('reset', function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -243,14 +253,17 @@ var browserCookies = require('browser-cookies');
 
     resizeForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  };
+  });
 
   /**
    * Валидация формы при изменении введенных значений.
+   * Изменение resizer исходя из значений формы.
    */
-  resizeForm.onchange = function() {
-    resizeFormIsValid();
-  };
+  resizeForm.addEventListener('change', function() {
+    if (resizeFormIsValid()) {
+      currentResizer.setConstraint(+resizeX.value, +resizeY.value, +resizeSize.value);
+    }
+  });
 
   /**
    * Обработка отправки формы кадрирования. Если форма валидна, экспортирует
@@ -258,7 +271,7 @@ var browserCookies = require('browser-cookies');
    * Если в куки есть фильтр - показывает ранее использовавшийся фильтр.
    * @param {Event} evt
    */
-  resizeForm.onsubmit = function(evt) {
+  resizeForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
@@ -273,25 +286,25 @@ var browserCookies = require('browser-cookies');
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
     }
-  };
+  });
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.onreset = function(evt) {
+  filterForm.addEventListener('reset', function(evt) {
     evt.preventDefault();
 
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
-  };
+  });
 
   /**
    * Отправка формы фильтра. Возвращает в начальное состояние, предварительно
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.onsubmit = function(evt) {
+  filterForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
     browserCookies.set('filter', selectedFilter, {
@@ -303,13 +316,13 @@ var browserCookies = require('browser-cookies');
 
     filterForm.classList.add('invisible');
     uploadForm.classList.remove('invisible');
-  };
+  });
 
   /**
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function() {
+  filterForm.addEventListener('change', function() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -329,7 +342,11 @@ var browserCookies = require('browser-cookies');
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
-  };
+  });
+
+  window.addEventListener('resizerchange', function() {
+    resizerToForm();
+  });
 
   cleanupResizer();
   updateBackground();
