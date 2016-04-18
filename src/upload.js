@@ -8,8 +8,9 @@
 'use strict';
 
 var browserCookies = require('browser-cookies');
+var utilities = require('./utilities');
 
-(function() {
+module.exports = (function() {
   /** @enum {string} */
   var FileType = {
     'GIF': '',
@@ -172,18 +173,12 @@ var browserCookies = require('browser-cookies');
   }
 
   /**
-   * Вычисление количества дней прошедшего с последнего дня рождения.
+   * Функция вычисления количества дней прошедшего с последнего дня рождения.
    * @param {number} day
    * @param {number} month
    * @return {number}
    */
-  function daysFromBirth(day, month) {
-    var dateNow = Date.now();
-    var birthDay = (new Date()).setMonth(month - 1, day);
-    var amountDays = (dateNow - birthDay) / (24 * 60 * 60 * 1000);
-
-    return amountDays < 0 ? amountDays += 365 : amountDays;
-  }
+  var daysFromBirth = utilities.daysFromBirth;
 
   /**
    * Устанавливает в форму значения из resizer.
