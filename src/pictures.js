@@ -48,20 +48,23 @@ module.exports = (function() {
   /* Фильтрация массива изображений по заданному фильтру */
   var getFiltrationPictures = require('./filtration');
 
+  var photoForGallery = require('./gallery').photoForGallery;
+
   /* Ререндеринг массива в соответствии с выбранным фильтром */
   var setFiltration = function(filtration) {
     filtrationPictures = getFiltrationPictures(pictures, filtration);
     renderNextPages(filtrationPictures, picturesContainer, true);
+    photoForGallery(filtrationPictures);
   };
 
   /* Установка обработчика событий на контролы управления фильтрацией */
   var setFiltrations = function() {
-    blockFilters.onchange = function() {
+    blockFilters.addEventListener('change', function() {
       var selectedFiltration = [].filter.call(blockFilters['filter'], function(item) {
         return item.checked;
       })[0].id;
       setFiltration(selectedFiltration);
-    };
+    });
   };
 
   /* Установка обработчика скролла для рендеринга изображений при прокрутке */
@@ -77,6 +80,25 @@ module.exports = (function() {
     });
   };
 
+  var showGallery = require('./gallery').showGallery;
+
+  /* Установка обработчика клика по фото для показа галлереи */
+  var setShowGallery = function() {
+    picturesContainer.addEventListener('click', function(evt) {
+      if (evt.target.src) {
+        evt.preventDefault();
+        var clickedImage = evt.target;
+        var allImages = picturesContainer.querySelectorAll('img');
+        for (var key in allImages) {
+          if (allImages[key] === clickedImage) {
+            break;
+          }
+        }
+        showGallery(key);
+      }
+    });
+  };
+
   /* Исполнение ajax-запроса, первоначальный рендеринг фото,
   * установка необходимых обработчиков событий
   */
@@ -87,6 +109,7 @@ module.exports = (function() {
     setFiltration('filter-popular');
 
     setScroll();
+    setShowGallery();
   });
 
   blockFilters.classList.remove('hidden');
