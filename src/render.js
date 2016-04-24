@@ -21,7 +21,7 @@ var renderPictures = function(picturesGeted, containerGeted, page) {
   var container = document.createDocumentFragment();
 
   picturesGeted.slice(start, end).forEach(function(picture, number) {
-    renderedPhotos.push(new Photo(picture, number, container));
+    renderedPhotos.push(new Photo(picture, start + number, container));
   });
 
   containerGeted.appendChild(container);
