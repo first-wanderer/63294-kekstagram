@@ -80,25 +80,6 @@ module.exports = (function() {
     });
   };
 
-  var showGallery = require('./gallery').showGallery;
-
-  /* Установка обработчика клика по фото для показа галлереи */
-  var setShowGallery = function() {
-    picturesContainer.addEventListener('click', function(evt) {
-      if (evt.target.src) {
-        evt.preventDefault();
-        var clickedImage = evt.target;
-        var allImages = picturesContainer.querySelectorAll('img');
-        for (var key in allImages) {
-          if (allImages[key] === clickedImage) {
-            break;
-          }
-        }
-        showGallery(key);
-      }
-    });
-  };
-
   /* Исполнение ajax-запроса, первоначальный рендеринг фото,
   * установка необходимых обработчиков событий
   */
@@ -109,7 +90,6 @@ module.exports = (function() {
     setFiltration('filter-popular');
 
     setScroll();
-    setShowGallery();
   });
 
   blockFilters.classList.remove('hidden');
