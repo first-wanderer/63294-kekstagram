@@ -7,9 +7,6 @@
 
 'use strict';
 
-var browserCookies = require('browser-cookies');
-var utilities = require('./utilities');
-
 module.exports = (function() {
   /** @enum {string} */
   var FileType = {
@@ -36,7 +33,11 @@ module.exports = (function() {
   /**
    * @type {Object.<string, string>}
    */
-  var filterMap;
+  var filterMap = {
+        'none': 'filter-none',
+        'chrome': 'filter-chrome',
+        'sepia': 'filter-sepia'
+      };
 
   /**
    * Объект, который занимается кадрированием изображения.
@@ -173,14 +174,6 @@ module.exports = (function() {
   }
 
   /**
-   * Функция вычисления количества дней прошедшего с последнего дня рождения.
-   * @param {number} day
-   * @param {number} month
-   * @return {number}
-   */
-  var daysFromBirth = utilities.daysFromBirth;
-
-  /**
    * Устанавливает в форму значения из resizer.
    */
   function resizerToForm() {
@@ -270,12 +263,12 @@ module.exports = (function() {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
-      var filterCookies = browserCookies.get('filter');
+      var filterStorage = localStorage.getItem('filter');
 
       filterImage.src = currentResizer.exportImage().src;
 
-      if (filterCookies) {
-        document.getElementById('upload-filter-' + filterCookies).checked = true;
+      if (filterStorage) {
+        document.getElementById('upload-filter-' + filterStorage).checked = true;
       }
 
       resizeForm.classList.add('invisible');
@@ -302,9 +295,7 @@ module.exports = (function() {
   filterForm.addEventListener('submit', function(evt) {
     evt.preventDefault();
 
-    browserCookies.set('filter', selectedFilter, {
-      expires: daysFromBirth(18, 2)
-    });
+    localStorage.setItem('filter', selectedFilter);
 
     cleanupResizer();
     updateBackground();
