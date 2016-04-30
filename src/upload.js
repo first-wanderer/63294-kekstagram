@@ -33,11 +33,7 @@ module.exports = (function() {
   /**
    * @type {Object.<string, string>}
    */
-  var filterMap = {
-        'none': 'filter-none',
-        'chrome': 'filter-chrome',
-        'sepia': 'filter-sepia'
-      };
+  var filterMap;
 
   /**
    * Объект, который занимается кадрированием изображения.
