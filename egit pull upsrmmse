@@ -1,0 +1,35 @@
+* [33mcommit c39be55e6a9c199098a05decad5f6a4175786336[m
+[31m|[m Author: First Wanderer <kaa-master37@mail.ru>
+[31m|[m Date:   Sat Apr 30 11:41:02 2016 +0300
+[31m|[m 
+[31m|[m     Add save filter into localStorage. Remove cookies
+[31m|[m    
+*   [33mcommit 4d70479bbe54a02695b282a3b1ce92ef73f702e9[m
+[32m|[m[33m\[m  Merge: 6151d05 15284a4
+[32m|[m [33m|[m Author: Vitaly Rtishchev <rtivital@gmail.com>
+[32m|[m [33m|[m Date:   Mon Apr 25 09:16:16 2016 +0300
+[32m|[m [33m|[m 
+[32m|[m [33m|[m     Merge pull request #14 from first-wanderer/module8-task2
+[32m|[m [33m|[m     
+[32m|[m [33m|[m     Объект «Галерея», продолжение
+[32m|[m [33m|[m   
+[32m|[m * [33mcommit 15284a4aef8bba47565da38544acbff69061c151[m
+[32m|[m[32m/[m  Author: First Wanderer <kaa-master37@mail.ru>
+[32m|[m   Date:   Sun Apr 24 23:07:28 2016 +0300
+[32m|[m   
+[32m|[m       Rework gallery for OOP
+[32m|[m    
+*   [33mcommit 6151d053e00c154ac94669c6279244e494909a45[m
+[34m|[m[35m\[m  Merge: 01407c8 0a15b63
+[34m|[m [35m|[m Author: Vitaly Rtishchev <rtivital@gmail.com>
+[34m|[m [35m|[m Date:   Sun Apr 24 15:34:22 2016 +0300
+[34m|[m [35m|[m 
+[34m|[m [35m|[m     Merge pull request #13 from first-wanderer/module8-task1
+[34m|[m [35m|[m     
+[34m|[m [35m|[m     Первый класс
+[34m|[m [35m|[m   
+[34m|[m * [33mcommit 0a15b630f888265afeea10f8e9af81b370b0f573[m
+[34m|[m [35m|[m Author: First Wanderer <kaa-master37@mail.ru>
+[34m|[m [35m|[m Date:   Sun Apr 24 15:09:14 2016 +0300
+[34m|[m [35m|[m 
+[34m|[m [35m|[m     Update constructor of photo, delete prototip methods

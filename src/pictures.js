@@ -49,6 +49,7 @@ module.exports = (function() {
   var getFiltrationPictures = require('./filtration');
 
   var photoForGallery = require('./gallery').photoForGallery;
+  var restoreFromHash = require('./gallery').restoreFromHash;
 
   /* Ререндеринг массива в соответствии с выбранным фильтром */
   var setFiltration = function(filtration) {
@@ -88,8 +89,8 @@ module.exports = (function() {
 
     setFiltrations();
     setFiltration('filter-popular');
-
     setScroll();
+    restoreFromHash();
   });
 
   blockFilters.classList.remove('hidden');

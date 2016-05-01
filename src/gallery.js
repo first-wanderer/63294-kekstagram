@@ -9,15 +9,29 @@ var Gallery = function() {
 
   var self = this;
   this.photos = [];
-  this.numberChosenPhoto = 0;
+  this.addressChosenPhoto = '';
+  this.numberNextPhoto = 0;
 
   this.photoForGallery = function(pictures) {
     self.photos = pictures;
   };
 
-  this.showPhoto = function(numberPhoto) {
-    var chosenPhoto = self.photos[numberPhoto];
+  this.showPhoto = function(parametrPhoto) {
+    var chosenPhoto;
     var contentImage = new Image();
+
+    if (typeof parametrPhoto === 'string') {
+      self.photos.some(function(item, i) {
+        // parametrPhoto = (item.url === parametrPhoto) ? i;
+        if (item.url === parametrPhoto) {
+          parametrPhoto = i;
+        }
+        return (typeof parametrPhoto === 'number');
+      });
+    }
+
+    this.numberNextPhoto = parametrPhoto + 1;
+    chosenPhoto = self.photos[parametrPhoto];
 
     contentImage.onload = function(evt) {
       image.src = evt.target.src;
@@ -27,32 +41,46 @@ var Gallery = function() {
     };
 
     contentImage.onerror = function() {
-      self.showPhoto(++numberPhoto);
+      location.hash = 'photo/' + self.photos[self.numberNextPhoto].url;
     };
 
     contentImage.src = chosenPhoto.url;
   };
 
   this.onCloseClickHandler = function() {
-    self.closeGallery();
+    location.hash = '';
   };
 
   this.onImageClickHandler = function() {
-    self.showPhoto(++self.numberChosenPhoto);
+    location.hash = 'photo/' + self.photos[self.numberNextPhoto].url;
   };
 
   this.onWindowKeydownHandler = function(evt) {
     if (!self.galleryContainer.classList.contains('invisible') && evt.keyCode === 27) {
       evt.preventDefault();
+      location.hash = '';
+    }
+  };
+
+  this.onHashChange = function() {
+    self.restoreFromHash();
+  };
+
+  this.restoreFromHash = function() {
+    var regPhoto = /#photo\/(\S+)/;
+    var photoInAddress = location.hash.match(regPhoto);
+    if (photoInAddress) {
+      self.showGallery(photoInAddress[1]);
+    } else {
       self.closeGallery();
     }
   };
 
-  this.showGallery = function(numberPhoto) {
-    self.numberChosenPhoto = numberPhoto;
+  this.showGallery = function(addressPhoto) {
+    self.addressChosenPhoto = addressPhoto;
 
     self.galleryContainer.classList.remove('invisible');
-    self.showPhoto(self.numberChosenPhoto);
+    self.showPhoto(self.addressChosenPhoto);
 
     cross.addEventListener('click', self.onCloseClickHandler);
     image.addEventListener('click', self.onImageClickHandler);
@@ -66,6 +94,8 @@ var Gallery = function() {
     image.removeEventListener('click', self.onImageClickHandler);
     window.removeEventListener('keydown', self.onWindowKeydownHandler);
   };
+
+  window.addEventListener('hashchange', self.onHashChange);
 };
 
 module.exports = new Gallery();

@@ -1,6 +1,5 @@
 'use strict';
 
-var showGallery = require('./gallery').showGallery;
 var getPictureElement = require('./get-picture-element');
 
 
@@ -11,7 +10,7 @@ var Photo = function(data, number, container) {
 
   this.onPhotoClick = (function(evt) {
     evt.preventDefault();
-    showGallery(this.number);
+    location.hash = 'photo/' + this.data.url;
   }).bind(this);
 
   this.remove = function() {
