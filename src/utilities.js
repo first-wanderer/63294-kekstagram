@@ -16,6 +16,6 @@ module.exports = {
     return picturesContainerPosition.bottom - windowHeight <= DAP;
   },
   isNextPageAvaible: function(picturesGeted, page, pageSize) {
-    return page < Math.floor(picturesGeted.length / pageSize);
+    return page < Math.ceil(picturesGeted.length / pageSize);
   }
 };

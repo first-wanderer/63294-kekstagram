@@ -265,6 +265,7 @@ module.exports = (function() {
 
       if (filterStorage) {
         document.getElementById('upload-filter-' + filterStorage).checked = true;
+        filterImage.className = 'filter-image-preview ' + 'filter-' + filterStorage;
       }
 
       resizeForm.classList.add('invisible');

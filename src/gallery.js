@@ -11,9 +11,11 @@ var Gallery = function() {
   this.photos = [];
   this.addressChosenPhoto = '';
   this.numberNextPhoto = 0;
+  this.amountPhoto = 0;
 
   this.photoForGallery = function(pictures) {
     self.photos = pictures;
+    self.amountPhoto = pictures.length;
   };
 
   this.showPhoto = function(parametrPhoto) {
@@ -22,7 +24,6 @@ var Gallery = function() {
 
     if (typeof parametrPhoto === 'string') {
       self.photos.some(function(item, i) {
-        // parametrPhoto = (item.url === parametrPhoto) ? i;
         if (item.url === parametrPhoto) {
           parametrPhoto = i;
         }
@@ -30,7 +31,7 @@ var Gallery = function() {
       });
     }
 
-    this.numberNextPhoto = parametrPhoto + 1;
+    this.numberNextPhoto = parametrPhoto + 1 < self.amountPhoto - 1 ? parametrPhoto + 1 : 0;
     chosenPhoto = self.photos[parametrPhoto];
 
     contentImage.onload = function(evt) {
@@ -48,7 +49,7 @@ var Gallery = function() {
   };
 
   this.onCloseClickHandler = function() {
-    location.hash = '';
+    location.hash = 'origin';
   };
 
   this.onImageClickHandler = function() {
@@ -58,7 +59,7 @@ var Gallery = function() {
   this.onWindowKeydownHandler = function(evt) {
     if (!self.galleryContainer.classList.contains('invisible') && evt.keyCode === 27) {
       evt.preventDefault();
-      location.hash = '';
+      location.hash = 'origin';
     }
   };
 
