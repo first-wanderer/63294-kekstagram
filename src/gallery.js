@@ -2,101 +2,116 @@
 
 var Gallery = function() {
   this.galleryContainer = document.querySelector('.gallery-overlay');
-  var image = this.galleryContainer.querySelector('.gallery-overlay-image');
-  var cross = this.galleryContainer.querySelector('.gallery-overlay-close');
-  var likes = this.galleryContainer.querySelector('.likes-count');
-  var comments = this.galleryContainer.querySelector('.comments-count');
+  this.image = this.galleryContainer.querySelector('.gallery-overlay-image');
+  this.cross = this.galleryContainer.querySelector('.gallery-overlay-close');
+  this.likes = this.galleryContainer.querySelector('.likes-count');
+  this.comments = this.galleryContainer.querySelector('.comments-count');
 
-  var self = this;
   this.photos = [];
   this.addressChosenPhoto = '';
   this.numberNextPhoto = 0;
   this.amountPhoto = 0;
 
-  this.photoForGallery = function(pictures) {
-    self.photos = pictures;
-    self.amountPhoto = pictures.length;
-  };
+  this.photoForGallery = this.photoForGallery.bind(this);
 
-  this.showPhoto = function(parametrPhoto) {
-    var chosenPhoto;
-    var contentImage = new Image();
+  this.showPhoto = this.showPhoto.bind(this);
 
-    if (typeof parametrPhoto === 'string') {
-      self.photos.some(function(item, i) {
-        if (item.url === parametrPhoto) {
-          parametrPhoto = i;
-        }
-        return (typeof parametrPhoto === 'number');
-      });
-    }
+  this.onImageClickHandler = this.onImageClickHandler.bind(this);
 
-    this.numberNextPhoto = parametrPhoto + 1 < self.amountPhoto - 1 ? parametrPhoto + 1 : 0;
-    chosenPhoto = self.photos[parametrPhoto];
+  this.onWindowKeydownHandler = this.onWindowKeydownHandler.bind(this);
 
-    contentImage.onload = function(evt) {
-      image.src = evt.target.src;
-      image.alt = chosenPhoto.date;
-      likes.textContent = chosenPhoto.likes;
-      comments.textContent = chosenPhoto.comments;
-    };
+  this.onHashChange = this.onHashChange.bind(this);
 
-    contentImage.onerror = function() {
-      location.hash = 'photo/' + self.photos[self.numberNextPhoto].url;
-    };
+  this.restoreFromHash = this.restoreFromHash.bind(this);
 
-    contentImage.src = chosenPhoto.url;
-  };
+  this.showGallery = this.showGallery.bind(this);
 
-  this.onCloseClickHandler = function() {
+  this.closeGallery = this.closeGallery.bind(this);
+
+  window.addEventListener('hashchange', this.onHashChange);
+};
+
+Gallery.prototype.photoForGallery = function(pictures) {
+  this.photos = pictures;
+  this.amountPhoto = pictures.length;
+};
+
+Gallery.prototype.showPhoto = function(parametrPhoto) {
+  var chosenPhoto;
+  var contentImage = new Image();
+
+  if (typeof parametrPhoto === 'string') {
+    this.photos.some(function(item, i) {
+      if (item.url === parametrPhoto) {
+        parametrPhoto = i;
+      }
+      return (typeof parametrPhoto === 'number');
+    });
+  }
+
+  this.numberNextPhoto = parametrPhoto + 1 < this.amountPhoto - 1 ? parametrPhoto + 1 : 0;
+  chosenPhoto = this.photos[parametrPhoto];
+
+  contentImage.onload = (function(evt) {
+    this.image.src = evt.target.src;
+    this.image.alt = chosenPhoto.date;
+    this.likes.textContent = chosenPhoto.likes;
+    this.comments.textContent = chosenPhoto.comments;
+  }).bind(this);
+
+  contentImage.onerror = (function() {
+    location.hash = 'photo/' + this.photos[this.numberNextPhoto].url;
+  }).bind(this);
+
+  contentImage.src = chosenPhoto.url;
+};
+
+Gallery.prototype.onCloseClickHandler = function() {
+  location.hash = 'origin';
+};
+
+Gallery.prototype.onImageClickHandler = function() {
+  location.hash = 'photo/' + this.photos[this.numberNextPhoto].url;
+};
+
+Gallery.prototype.onWindowKeydownHandler = function(evt) {
+  if (!this.galleryContainer.classList.contains('invisible') && evt.keyCode === 27) {
+    evt.preventDefault();
     location.hash = 'origin';
-  };
+  }
+};
 
-  this.onImageClickHandler = function() {
-    location.hash = 'photo/' + self.photos[self.numberNextPhoto].url;
-  };
+Gallery.prototype.onHashChange = function() {
+  this.restoreFromHash();
+};
 
-  this.onWindowKeydownHandler = function(evt) {
-    if (!self.galleryContainer.classList.contains('invisible') && evt.keyCode === 27) {
-      evt.preventDefault();
-      location.hash = 'origin';
-    }
-  };
+Gallery.prototype.restoreFromHash = function() {
+  var regPhoto = /#photo\/(\S+)/;
+  var photoInAddress = location.hash.match(regPhoto);
+  if (photoInAddress) {
+    this.showGallery(photoInAddress[1]);
+  } else {
+    this.closeGallery();
+  }
+};
 
-  this.onHashChange = function() {
-    self.restoreFromHash();
-  };
+Gallery.prototype.showGallery = function(addressPhoto) {
+  this.addressChosenPhoto = addressPhoto;
 
-  this.restoreFromHash = function() {
-    var regPhoto = /#photo\/(\S+)/;
-    var photoInAddress = location.hash.match(regPhoto);
-    if (photoInAddress) {
-      self.showGallery(photoInAddress[1]);
-    } else {
-      self.closeGallery();
-    }
-  };
+  this.galleryContainer.classList.remove('invisible');
+  this.showPhoto(this.addressChosenPhoto);
 
-  this.showGallery = function(addressPhoto) {
-    self.addressChosenPhoto = addressPhoto;
+  this.cross.addEventListener('click', this.onCloseClickHandler);
+  this.image.addEventListener('click', this.onImageClickHandler);
+  window.addEventListener('keydown', this.onWindowKeydownHandler);
+};
 
-    self.galleryContainer.classList.remove('invisible');
-    self.showPhoto(self.addressChosenPhoto);
+Gallery.prototype.closeGallery = function() {
+  this.galleryContainer.classList.add('invisible');
 
-    cross.addEventListener('click', self.onCloseClickHandler);
-    image.addEventListener('click', self.onImageClickHandler);
-    window.addEventListener('keydown', self.onWindowKeydownHandler);
-  };
-
-  this.closeGallery = function() {
-    self.galleryContainer.classList.add('invisible');
-
-    cross.removeEventListener('click', self.onCloseClickHandler);
-    image.removeEventListener('click', self.onImageClickHandler);
-    window.removeEventListener('keydown', self.onWindowKeydownHandler);
-  };
-
-  window.addEventListener('hashchange', self.onHashChange);
+  this.cross.removeEventListener('click', this.onCloseClickHandler);
+  this.image.removeEventListener('click', this.onImageClickHandler);
+  window.removeEventListener('keydown', this.onWindowKeydownHandler);
 };
 
 module.exports = new Gallery();
