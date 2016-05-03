@@ -6,19 +6,19 @@ module.exports = function(picturesGeted, filtration) {
   switch (filtration) {
     case 'filter-discussed':
       picturesToFiltration.sort(function(a, b) {
-        return b.comments - a.comments;
+        return b.getComments() - a.getComments();
       });
       break;
 
     case 'filter-new':
       picturesToFiltration.sort(function(a, b) {
-        return b.date.replace(/-/g, '') - a.date.replace(/-/g, '');
+        return b.getDate().replace(/-/g, '') - a.getDate().replace(/-/g, '');
       });
 
-      var periodTwoWeek = +new Date(picturesToFiltration[0]['date']) - 14 * 24 * 60 * 60 * 1000;
+      var periodTwoWeek = +new Date(picturesToFiltration[0].getDate()) - 14 * 24 * 60 * 60 * 1000;
 
       picturesToFiltration = picturesToFiltration.filter(function(item) {
-        return +new Date(item.date) > periodTwoWeek;
+        return +new Date(item.getDate()) > periodTwoWeek;
       });
       break;
   }

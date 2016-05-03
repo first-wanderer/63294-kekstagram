@@ -5,7 +5,7 @@ var pageNumber = 0;
 var renderedPhotos = [];
 
 /* Конструктор изображений */
-var Photo = require('./photo.js');
+var Photo = require('./photo');
 
 /* Проверка на достижения нижнего края контейнера */
 var isBottomReached = require('./utilities').isBottomReached;
@@ -20,8 +20,8 @@ var renderPictures = function(picturesGeted, containerGeted, page) {
 
   var container = document.createDocumentFragment();
 
-  picturesGeted.slice(start, end).forEach(function(picture, number) {
-    renderedPhotos.push(new Photo(picture, start + number, container));
+  picturesGeted.slice(start, end).forEach(function(picture) {
+    renderedPhotos.push(new Photo(picture, container));
   });
 
   containerGeted.appendChild(container);

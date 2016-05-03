@@ -8,6 +8,7 @@ var Gallery = function() {
   this.comments = this.galleryContainer.querySelector('.comments-count');
 
   this.photos = [];
+  this.chosenPhoto = {};
   this.addressChosenPhoto = '';
   this.numberNextPhoto = 0;
   this.amountPhoto = 0;
@@ -17,6 +18,7 @@ var Gallery = function() {
   this.showPhoto = this.showPhoto.bind(this);
 
   this.onImageClickHandler = this.onImageClickHandler.bind(this);
+  this.onLikeClickHandler = this.onLikeClickHandler.bind(this);
 
   this.onWindowKeydownHandler = this.onWindowKeydownHandler.bind(this);
 
@@ -37,12 +39,11 @@ Gallery.prototype.photoForGallery = function(pictures) {
 };
 
 Gallery.prototype.showPhoto = function(parametrPhoto) {
-  var chosenPhoto;
   var contentImage = new Image();
 
   if (typeof parametrPhoto === 'string') {
     this.photos.some(function(item, i) {
-      if (item.url === parametrPhoto) {
+      if (item.getUrl() === parametrPhoto) {
         parametrPhoto = i;
       }
       return (typeof parametrPhoto === 'number');
@@ -50,20 +51,20 @@ Gallery.prototype.showPhoto = function(parametrPhoto) {
   }
 
   this.numberNextPhoto = parametrPhoto + 1 < this.amountPhoto - 1 ? parametrPhoto + 1 : 0;
-  chosenPhoto = this.photos[parametrPhoto];
+  this.chosenPhoto = this.photos[parametrPhoto];
 
   contentImage.onload = (function(evt) {
     this.image.src = evt.target.src;
-    this.image.alt = chosenPhoto.date;
-    this.likes.textContent = chosenPhoto.likes;
-    this.comments.textContent = chosenPhoto.comments;
+    this.image.alt = this.chosenPhoto.getDate();
+    this.likes.textContent = this.chosenPhoto.getLikes();
+    this.comments.textContent = this.chosenPhoto.getComments();
   }).bind(this);
 
   contentImage.onerror = (function() {
-    location.hash = 'photo/' + this.photos[this.numberNextPhoto].url;
+    location.hash = 'photo/' + this.photos[this.numberNextPhoto].getUrl();
   }).bind(this);
 
-  contentImage.src = chosenPhoto.url;
+  contentImage.src = this.chosenPhoto.getUrl();
 };
 
 Gallery.prototype.onCloseClickHandler = function() {
@@ -71,7 +72,12 @@ Gallery.prototype.onCloseClickHandler = function() {
 };
 
 Gallery.prototype.onImageClickHandler = function() {
-  location.hash = 'photo/' + this.photos[this.numberNextPhoto].url;
+  location.hash = 'photo/' + this.photos[this.numberNextPhoto].getUrl();
+};
+
+Gallery.prototype.onLikeClickHandler = function() {
+  this.chosenPhoto.setLikes();
+  this.likes.textContent = this.chosenPhoto.getLikes();
 };
 
 Gallery.prototype.onWindowKeydownHandler = function(evt) {
@@ -103,6 +109,7 @@ Gallery.prototype.showGallery = function(addressPhoto) {
 
   this.cross.addEventListener('click', this.onCloseClickHandler);
   this.image.addEventListener('click', this.onImageClickHandler);
+  this.likes.addEventListener('click', this.onLikeClickHandler);
   window.addEventListener('keydown', this.onWindowKeydownHandler);
 };
 
@@ -111,6 +118,7 @@ Gallery.prototype.closeGallery = function() {
 
   this.cross.removeEventListener('click', this.onCloseClickHandler);
   this.image.removeEventListener('click', this.onImageClickHandler);
+  this.likes.removeEventListener('click', this.onLikeClickHandler);
   window.removeEventListener('keydown', this.onWindowKeydownHandler);
 };
 

@@ -81,11 +81,16 @@ module.exports = (function() {
     });
   };
 
+  /* Конструктор объектов изображений */
+  var LoadedPicture = require('./loaded-picture');
+
   /* Исполнение ajax-запроса, первоначальный рендеринг фото,
   * установка необходимых обработчиков событий
   */
   getPicture(function(loadedPictures) {
-    pictures = loadedPictures;
+    pictures = loadedPictures.map(function(item, index) {
+      return (new LoadedPicture()).record(item, index);
+    });
 
     setFiltrations();
     setFiltration('filter-popular');

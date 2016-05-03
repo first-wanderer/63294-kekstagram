@@ -17,5 +17,10 @@ module.exports = {
   },
   isNextPageAvaible: function(picturesGeted, page, pageSize) {
     return page < Math.ceil(picturesGeted.length / pageSize);
+  },
+  inherit: function(parent, child) {
+    var EmptyConstructor = function() {};
+    EmptyConstructor.prototype = parent.prototype;
+    child.prototype = new EmptyConstructor();
   }
 };

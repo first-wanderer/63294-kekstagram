@@ -1,29 +1,20 @@
 'use strict';
 
 var getPictureElement = require('./get-picture-element');
+var inherit = require('./utilities').inherit;
+var BaseDOMComponent = require('./base-dom-component');
 
+var Photo = function(data, container) {
+  BaseDOMComponent.call(this, data, container);
 
-var Photo = function(data, number, container) {
-  this.data = data;
-  this.number = number;
-  this.element = getPictureElement(data, container);
-
-  this.onPhotoClick = this.onPhotoClick.bind(this);
-
-  this.remove = this.remove.bind(this);
-
-  this.element.addEventListener('click', this.onPhotoClick);
-  container.appendChild(this.element);
+  this.address = 'photo/' + this.data.getUrl();
 };
 
-Photo.prototype.onPhotoClick = function(evt) {
-  evt.preventDefault();
-  location.hash = 'photo/' + this.data.url;
+inherit(BaseDOMComponent, Photo);
+
+Photo.prototype.getElement = function(data) {
+  return getPictureElement(data);
 };
 
-Photo.prototype.remove = function() {
-  this.element.removeEventListener('click', this.onPhotoClick);
-  this.element.parentNode.removeChild(this.element);
-};
 
 module.exports = Photo;
