@@ -13,6 +13,8 @@ var Gallery = function() {
   this.numberNextPhoto = 0;
   this.amountPhoto = 0;
 
+  this.rerenderLike = this.rerenderLike.bind(this);
+
   this.photoForGallery = this.photoForGallery.bind(this);
 
   this.showPhoto = this.showPhoto.bind(this);
@@ -67,6 +69,8 @@ Gallery.prototype.showPhoto = function(parametrPhoto) {
   contentImage.src = this.chosenPhoto.getUrl();
 };
 
+Gallery.prototype.rerenderLike = require('./render').update;
+
 Gallery.prototype.onCloseClickHandler = function() {
   location.hash = 'origin';
 };
@@ -78,6 +82,7 @@ Gallery.prototype.onImageClickHandler = function() {
 Gallery.prototype.onLikeClickHandler = function() {
   this.chosenPhoto.setLikes();
   this.likes.textContent = this.chosenPhoto.getLikes();
+  this.rerenderLike(this.numberNextPhoto - 1);
 };
 
 Gallery.prototype.onWindowKeydownHandler = function(evt) {

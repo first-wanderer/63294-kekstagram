@@ -8,12 +8,18 @@ var Photo = function(data, container) {
   BaseDOMComponent.call(this, data, container);
 
   this.address = 'photo/' + this.data.getUrl();
+
+  this.updateLike = this.updateLike.bind(this);
 };
 
 inherit(BaseDOMComponent, Photo);
 
 Photo.prototype.getElement = function(data) {
   return getPictureElement(data);
+};
+
+Photo.prototype.updateLike = function() {
+  this.element.querySelector('.picture-likes').textContent = this.data.getLikes();
 };
 
 

@@ -43,7 +43,7 @@ module.exports = (function() {
   };
 
   /* Рендеринга изображений по 12 штук */
-  var renderNextPages = require('./render');
+  var renderNextPages = require('./render').render;
 
   /* Фильтрация массива изображений по заданному фильтру */
   var getFiltrationPictures = require('./filtration');

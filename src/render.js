@@ -27,18 +27,23 @@ var renderPictures = function(picturesGeted, containerGeted, page) {
   containerGeted.appendChild(container);
 };
 
-module.exports = function(picturesGeted, containerGeted, reset) {
-  if (reset) {
-    pageNumber = 0;
+module.exports = {
+  render: function(picturesGeted, containerGeted, reset) {
+    if (reset) {
+      pageNumber = 0;
 
-    renderedPhotos.forEach(function(picture) {
-      picture.remove();
-    });
+      renderedPhotos.forEach(function(picture) {
+        picture.remove();
+      });
 
-    renderedPhotos = [];
-  }
+      renderedPhotos = [];
+    }
 
-  while (isBottomReached(containerGeted) && isNextPageAvaible(picturesGeted, pageNumber, PAGE_SIZE)) {
-    renderPictures(picturesGeted, containerGeted, pageNumber++);
+    while (isBottomReached(containerGeted) && isNextPageAvaible(picturesGeted, pageNumber, PAGE_SIZE)) {
+      renderPictures(picturesGeted, containerGeted, pageNumber++);
+    }
+  },
+  update: function(index) {
+    renderedPhotos[index].updateLike();
   }
 };
