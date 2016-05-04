@@ -15,21 +15,27 @@ var getPictureElement = function(data) {
   var element = elementToClone.cloneNode(true);
   var imageInElement = element.querySelector('img');
 
+  var imageOnLoad = function(evt) {
+    imageInElement.src = evt.target.src;
+    imageInElement.width = 182;
+    imageInElement.height = 182;
+    imageInElement.alt = data.getDate();
+
+    this.removeEventListener('error', imageOnError);
+  };
+
+  var imageOnError = function() {
+    element.classList.add('picture-load-failure');
+    this.removeEventListener('load', imageOnLoad);
+  };
+
   element.querySelector('.picture-comments').textContent = data.getComments();
   element.querySelector('.picture-likes').textContent = data.getLikes();
 
   var contentImage = new Image();
 
-  contentImage.onload = function(evt) {
-    imageInElement.src = evt.target.src;
-    imageInElement.width = 182;
-    imageInElement.height = 182;
-    imageInElement.alt = data.getDate();
-  };
-
-  contentImage.onerror = function() {
-    element.classList.add('picture-load-failure');
-  };
+  contentImage.addEventListener('load', imageOnLoad);
+  contentImage.addEventListener('error', imageOnError);
 
   contentImage.src = data.getUrl();
 

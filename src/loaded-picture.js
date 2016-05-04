@@ -2,7 +2,10 @@
 
 var LoadedPicture = (function() {
   var data = {};
-  var LoadPicture = function() {};
+
+  var LoadPicture = function() {
+    this.name = null;
+  };
 
   LoadPicture.prototype.record = function(photoObj, name) {
     this.name = name;
