@@ -94,9 +94,9 @@ module.exports = (function() {
       this._ctx.strokeStyle = '#ffe753';
       // Размер штрихов. Первый элемент массива задает длину штриха, второй
       // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
+      // this._ctx.setLineDash([15, 10]);
       // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+      // this._ctx.lineDashOffset = 7;
 
       // Сохранение состояния канваса.
       // Подробней см. строку 132.
@@ -121,39 +121,83 @@ module.exports = (function() {
       //     this._resizeConstraint.side - this._ctx.lineWidth / 2);
 
       //Точечная рамка области кадрирования
-      this._ctx.fillStyle = '#ffe753';
+      // this._ctx.fillStyle = '#ffe753';
 
-      var drawCircle = function(ctx, x, y, size) {
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2, true);
-        ctx.fill();
-      };
+      // var drawCircle = function(ctx, x, y, size) {
+      //   ctx.beginPath();
+      //   ctx.arc(x, y, size, 0, Math.PI * 2, true);
+      //   ctx.fill();
+      // };
 
-      var circleX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
-      var circleY = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      // var circleX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      // var circleY = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
 
-      while (circleX < this._resizeConstraint.side / 2) {
-        drawCircle(this._ctx, circleX, circleY, 3);
-        circleX += 12;
+      // while (circleX < this._resizeConstraint.side / 2) {
+      //   drawCircle(this._ctx, circleX, circleY, 3);
+      //   circleX += 12;
+      // }
+
+      // circleX = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      // while (circleY < this._resizeConstraint.side / 2) {
+      //   drawCircle(this._ctx, circleX, circleY, 3);
+      //   circleY += 12;
+      // }
+
+      // circleY = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+      // while (circleX > -this._resizeConstraint.side / 2) {
+      //   drawCircle(this._ctx, circleX, circleY, 3);
+      //   circleX -= 12;
+      // }
+
+      // circleX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      // while (circleY > -this._resizeConstraint.side / 2) {
+      //   drawCircle(this._ctx, circleX, circleY, 3);
+      //   circleY -= 12;
+      // }
+
+      // Зигзагообразная рамка области кадрирования
+      var lengthLine = this._resizeConstraint.side / 20;
+      var counter = 0;
+      var lineX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
+      var lineY = -this._resizeConstraint.side / 2 + lengthLine;
+
+      this._ctx.beginPath();
+      this._ctx.moveTo(lineX, lineY);
+
+      while (lineX < this._resizeConstraint.side / 2 - this._ctx.lineWidth) {
+        lineX = lineX + lengthLine;
+        lineY = counter % 2 === 0 ? -this._resizeConstraint.side / 2 : -this._resizeConstraint.side / 2 + lengthLine;
+        this._ctx.lineTo(lineX, lineY);
+        counter++;
       }
 
-      circleX = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
-      while (circleY < this._resizeConstraint.side / 2) {
-        drawCircle(this._ctx, circleX, circleY, 3);
-        circleY += 12;
+      lineY = lineY - this._ctx.lineWidth / 2;
+      counter = 0;
+      while (lineY < this._resizeConstraint.side / 2 - this._ctx.lineWidth) {
+        lineX = counter % 2 === 0 ? this._resizeConstraint.side / 2 - this._ctx.lineWidth - lengthLine : this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+        lineY = lineY + lengthLine;
+        this._ctx.lineTo(lineX, lineY);
+        counter++;
       }
 
-      circleY = this._resizeConstraint.side / 2 - this._ctx.lineWidth;
-      while (circleX > -this._resizeConstraint.side / 2) {
-        drawCircle(this._ctx, circleX, circleY, 3);
-        circleX -= 12;
+      counter = 0;
+      while (lineX > -this._resizeConstraint.side / 2 - this._ctx.lineWidth) {
+        lineX = lineX - lengthLine;
+        lineY = counter % 2 === 0 ? this._resizeConstraint.side / 2 - this._ctx.lineWidth - lengthLine : this._resizeConstraint.side / 2 - this._ctx.lineWidth;
+        this._ctx.lineTo(lineX, lineY);
+        counter++;
       }
 
-      circleX = -this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2;
-      while (circleY > -this._resizeConstraint.side / 2) {
-        drawCircle(this._ctx, circleX, circleY, 3);
-        circleY -= 12;
+      counter = 0;
+      while (lineY > -this._resizeConstraint.side / 2 - this._ctx.lineWidth + 2 * lengthLine) {
+        lineX = counter % 2 === 0 ? -this._resizeConstraint.side / 2 + lengthLine : -this._resizeConstraint.side / 2;
+        lineY = lineY - lengthLine;
+        this._ctx.lineTo(lineX, lineY);
+        counter++;
       }
+
+      this._ctx.closePath();
+      this._ctx.stroke();
 
       //Цвет заливки полупрозрачного оверлея
       this._ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
